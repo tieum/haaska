@@ -82,9 +82,9 @@ class Configuration(object):
         if opts_dict is not None:
             self._json = opts_dict
 
-        self.url = self.get_url(self.get(['url', 'ha_url']))
+        self.url = os.environ.get("HA_URL")
+        self.bearer_token = os.environ.get("HA_TOKEN")
         self.ssl_verify = self.get(['ssl_verify', 'ha_cert'], default=True)
-        self.bearer_token = self.get(['bearer_token'], default='')
         self.ssl_client = self.get(['ssl_client'], default='')
         self.debug = self.get(['debug'], default=False)
 
@@ -93,14 +93,6 @@ class Configuration(object):
             if key in self._json:
                 return self._json[key]
         return default
-
-    def get_url(self, url):
-        """Returns Home Assistant base url without '/api' or trailing slash"""
-        if not url:
-            raise ValueError('Property "url" is missing in config')
-
-        return url.replace("/api", "").rstrip("/")
-
 
 def event_handler(event, context):
     config = Configuration('config.json')
