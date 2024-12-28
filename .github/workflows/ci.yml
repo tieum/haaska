@@ -20,4 +20,5 @@ jobs:
     - name: flake8
       run: |
         flake8 haaska.py
+        flake8 test.py
         python -m pytest test.py
