@@ -88,8 +88,14 @@ class Configuration(object):
         if opts_dict is not None:
             self._json = opts_dict
 
-        self.url = os.environ.get("HA_URL")
-        self.bearer_token = os.environ.get("HA_TOKEN")
+        self.url = os.environ.get(
+            "HA_URL",
+            self.get(['url'], default='')
+        )
+        self.bearer_token = os.environ.get(
+            "HA_TOKEN",
+            self.get(['bearer_token'], default='')
+        )
         self.ssl_verify = bool(os.environ.get(
             "SSL_VERIFY",
             self.get(['ssl_verify', 'ha_cert'], default=True)

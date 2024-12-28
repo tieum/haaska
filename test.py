@@ -11,7 +11,8 @@ def configuration():
         "bearer_token": "",
         "debug": False,
         "ssl_verify": True,
-        "ssl_client": []
+        "ssl_client": [],
+        "proxy_url": "http://localhost:1055"
     })
 
 
@@ -37,3 +38,10 @@ def test_config_get(configuration):
     assert not configuration.get(["debug"])
     assert configuration.get(["test"]) is None
     assert configuration.get(["test"], default="default") == "default"
+
+
+def test_proxy_present(home_assistant):
+    assert home_assistant.session.proxies == {
+        "http": "http://localhost:1055",
+        "https": "http://localhost:1055"
+    }
