@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3.13
 # coding: utf-8
 
 # Copyright (c) 2015 Michael Auchter <a@phire.org>
@@ -34,6 +34,13 @@ class HomeAssistant(object):
         self.config = config
 
         self.session = requests.Session()
+        if config.proxy_url is not None:
+            logger.debug(f'using proxy {config.proxy_url}')
+            self.session.proxies.update({
+                'http': config.proxy_url,
+                'https': config.proxy_url
+            })
+
         self.session.headers = {
             'Authorization': f'Bearer {config.bearer_token}',
             'content-type': 'application/json',
@@ -59,7 +66,7 @@ class HomeAssistant(object):
     def post(self, endpoint, data, wait=False):
         read_timeout = None if wait else 0.01
         try:
-            logger.debug(f'calling {endpoint} with {data}')
+            logger.debug(f'calling {self.build_url(endpoint)} with {data}')
             r = self.session.post(self.build_url(endpoint),
                                   data=json.dumps(data),
                                   timeout=(None, read_timeout))
@@ -82,17 +89,37 @@ class Configuration(object):
         if opts_dict is not None:
             self._json = opts_dict
 
-        self.url = os.environ.get("HA_URL")
-        self.bearer_token = os.environ.get("HA_TOKEN")
-        self.ssl_verify = self.get(['ssl_verify', 'ha_cert'], default=True)
-        self.ssl_client = self.get(['ssl_client'], default='')
-        self.debug = self.get(['debug'], default=False)
+        self.url = os.environ.get(
+            "HA_URL",
+            self.get(['url'], default='')
+        )
+        self.bearer_token = os.environ.get(
+            "HA_TOKEN",
+            self.get(['bearer_token'], default='')
+        )
+        self.ssl_verify = str(os.environ.get(
+            "SSL_VERIFY",
+            self.get(['ssl_verify'], default='true')
+        )).lower() == 'true'
+        self.ssl_client = os.environ.get(
+            "SSL_CLIENT",
+            self.get(['ssl_client'], default='')
+        )
+        self.debug = str(os.environ.get(
+            "DEBUG",
+            self.get(['debug'], default='false')
+        )).lower() == 'true'
+        self.proxy_url = os.environ.get(
+            "PROXY_URL",
+            self.get(['proxy_url'], default=None)
+        )
 
     def get(self, keys, default=None):
         for key in keys:
             if key in self._json:
                 return self._json[key]
         return default
+
 
 def event_handler(event, context):
     config = Configuration('config.json')
