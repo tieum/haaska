@@ -10,7 +10,7 @@ def configuration():
         "url": "http://localhost:8123",
         "bearer_token": "",
         "debug": False,
-        "ssl_verify": True,
+        "ssl_verify": False,
         "ssl_client": "",
         "proxy_url": "http://localhost:1055"
     })
@@ -38,6 +38,8 @@ def test_config_get(configuration):
     assert not configuration.get(["debug"])
     assert configuration.get(["test"]) is None
     assert configuration.get(["test"], default="default") == "default"
+    assert configuration.get(["debug"]) is False
+    assert configuration.get(["ssl_verify"]) is False
 
 
 def test_proxy_present(home_assistant):
