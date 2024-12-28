@@ -35,7 +35,10 @@ class HomeAssistant(object):
 
         self.session = requests.Session()
         if config.proxy_url is not None:
-            self.session.proxies = {'http': config.proxy_url, 'https': config.proxy_url}
+            self.session.proxies = {
+                'http': config.proxy_url,
+                'https': config.proxy_url
+            }
 
         self.session.headers = {
             'Authorization': f'Bearer {config.bearer_token}',
@@ -87,16 +90,29 @@ class Configuration(object):
 
         self.url = os.environ.get("HA_URL")
         self.bearer_token = os.environ.get("HA_TOKEN")
-        self.ssl_verify = bool(os.environ.get("SSL_VERIFY", self.get(['ssl_verify', 'ha_cert'], default=True)))
-        self.ssl_client = os.environ.get("SSL_CLIENT", self.get(['ssl_client'], default=''))
-        self.debug = bool(os.environ.get("DEBUG", self.get(['debug'], default=False)))
-        self.proxy_url = os.environ.get("PROXY_URL", self.get(['proxy_url'], default=None))
+        self.ssl_verify = bool(os.environ.get("SSL_VERIFY",
+            self.get(['ssl_verify', 'ha_cert'], 
+            default=True))
+        )
+        self.ssl_client = os.environ.get("SSL_CLIENT",
+            self.get(['ssl_client'],
+            default='')
+        )
+        self.debug = bool(os.environ.get("DEBUG",
+            self.get(['debug'],
+            default=False))
+        )
+        self.proxy_url = os.environ.get("PROXY_URL",
+            self.get(['proxy_url'],
+            default=None)
+        )
 
     def get(self, keys, default=None):
         for key in keys:
             if key in self._json:
                 return self._json[key]
         return default
+
 
 def event_handler(event, context):
     config = Configuration('config.json')
