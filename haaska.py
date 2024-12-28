@@ -35,10 +35,10 @@ class HomeAssistant(object):
 
         self.session = requests.Session()
         if config.proxy_url is not None:
-            self.session.proxies = {
+            self.session.proxies.update({
                 'http': config.proxy_url,
                 'https': config.proxy_url
-            }
+            })
 
         self.session.headers = {
             'Authorization': f'Bearer {config.bearer_token}',
