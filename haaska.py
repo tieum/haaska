@@ -35,6 +35,7 @@ class HomeAssistant(object):
 
         self.session = requests.Session()
         if config.proxy_url is not None:
+            logger.debug(f'using proxy {config.proxy_url}')
             self.session.proxies.update({
                 'http': config.proxy_url,
                 'https': config.proxy_url
@@ -96,18 +97,18 @@ class Configuration(object):
             "HA_TOKEN",
             self.get(['bearer_token'], default='')
         )
-        self.ssl_verify = bool(os.environ.get(
+        self.ssl_verify = str(os.environ.get(
             "SSL_VERIFY",
-            self.get(['ssl_verify'], default=True)
-        ))
+            self.get(['ssl_verify'], default='true')
+        )).lower() == 'true'
         self.ssl_client = os.environ.get(
             "SSL_CLIENT",
             self.get(['ssl_client'], default='')
         )
-        self.debug = bool(os.environ.get(
+        self.debug = str(os.environ.get(
             "DEBUG",
-            self.get(['debug'], default=False)
-        ))
+            self.get(['debug'], default='false')
+        )).lower() == 'true'
         self.proxy_url = os.environ.get(
             "PROXY_URL",
             self.get(['proxy_url'], default=None)
