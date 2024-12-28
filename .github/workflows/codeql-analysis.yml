@@ -3,11 +3,17 @@ name: "Code scanning - action"
 on:
   push:
     branches: [master, ]
+    paths-ignore:
+    - '**.md'
+    - 'LICENSE'
+    - .github/**
+    - .vscode/**
+    - .gitignore
+
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [master]
-  schedule:
-    - cron: '0 9 * * 3'
+  workflow_dispatch: null
 
 jobs:
   CodeQL-Build:
