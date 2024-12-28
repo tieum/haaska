@@ -90,21 +90,21 @@ class Configuration(object):
 
         self.url = os.environ.get("HA_URL")
         self.bearer_token = os.environ.get("HA_TOKEN")
-        self.ssl_verify = bool(os.environ.get("SSL_VERIFY",
-            self.get(['ssl_verify', 'ha_cert'], 
-            default=True))
+        self.ssl_verify = bool(os.environ.get(
+            "SSL_VERIFY",
+            self.get(['ssl_verify', 'ha_cert'], default=True)
+        ))
+        self.ssl_client = os.environ.get(
+            "SSL_CLIENT",
+            self.get(['ssl_client'], default='')
         )
-        self.ssl_client = os.environ.get("SSL_CLIENT",
-            self.get(['ssl_client'],
-            default='')
-        )
-        self.debug = bool(os.environ.get("DEBUG",
-            self.get(['debug'],
-            default=False))
-        )
-        self.proxy_url = os.environ.get("PROXY_URL",
-            self.get(['proxy_url'],
-            default=None)
+        self.debug = bool(os.environ.get(
+            "DEBUG",
+            self.get(['debug'], default=False)
+        ))
+        self.proxy_url = os.environ.get(
+            "PROXY_URL",
+            self.get(['proxy_url'], default=None)
         )
 
     def get(self, keys, default=None):
